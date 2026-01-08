@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- TAG OPEN GRAPH -->
+    <title>Live Streaming - Bigo Style</title>
+    <meta name="description" content="Tonton live streaming seru, kirim gift, dan ngobrol langsung dengan host favoritmu!">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://link-website-kamu.com/"> 
+    <meta property="og:title" content="Live Streaming Seru - Join Sekarang! ✨">
+    <meta property="og:description" content="Lagi rame nih! Yuk gabung dan seru-seruan bareng di room Host_Imut.">
+    <meta property="og:image" content="https://ui-avatars.com/api/?name=Live+Streaming&size=512"> 
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes slideUp {
+            from { transform: translateY(20px) translateX(-20px); opacity: 0; }
+            to { transform: translateY(0) translateX(0); opacity: 1; }
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-100px) scale(1.5); opacity: 0; }
+        }
+        /* Animasi khusus untuk tap layar agar meluncur ke atas */
+        @keyframes tapHeart {
+            0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-150px) scale(1.5) rotate(20deg); opacity: 0; }
+        }
+        @keyframes bounceCombo {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+        }
+        .animate-slide-up { animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .animate-combo { animation: bounceCombo 0.2s ease-in-out; }
+        
+        .gift-notif { 
+            background: linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(236,72,153,0.4) 100%);
+            border-left: 4px solid #ec4899;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        #live-video {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+        }
+
+        .tap-heart {
+            position: absolute;
+            pointer-events: none;
+            z-index: 100;
+            animation: tapHeart 0.8s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-black text-white h-screen w-full overflow-hidden font-sans" onclick="spawnTapHeart(event)">
+
+    <div class="relative h-screen w-full max-w-md mx-auto bg-gray-900 shadow-2xl overflow-hidden border-x border-gray-800">
+        
+        <!-- Background Video -->
+        <div class="absolute inset-0 z-0">
+            <video id="live-video" autoplay loop muted playsinline>
+                <source src="https://assets.mixkit.co/videos/preview/mixkit-girl-dancing-and-listening-to-music-with-headphones-42283-large.mp4" type="video/mp4">
+            </video>
+            <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
+        </div>
+
+        <!-- Header -->
+        <div class="absolute top-4 left-4 right-4 z-20 flex justify-between items-center">
+            <div class="flex items-center bg-black/40 backdrop-blur-md rounded-full p-1 pr-4">
+                <img src="https://ui-avatars.com/api/?name=Host+Cantik&background=random" 
+                     class="w-10 h-10 rounded-full border-2 border-pink-500" 
+                     alt="Host"
+                     onclick="goToDirectLink(event)">
+                
+                <div class="ml-2" onclick="goToDirectLink(event)">
+                    <p class="text-xs font-bold leading-tight">Host_Imut ✨</p>
+                    <p class="text-[10px] text-gray-300">ID: 9928374</p>
+                </div>
+                <button onclick="goToDirectLink(event)" class="ml-3 bg-pink-500 hover:bg-pink-600 text-[10px] px-3 py-1 rounded-full font-bold">IKUTI</button>
+            </div>
+            
+            <div class="bg-black/40 backdrop-blur-md rounded-full px-3 py-1 flex items-center border border-white/10" onclick="goToDirectLink(event)">
+                <span class="w-2 h-2 bg-red-500 rounded-full mr-2 animate-pulse"></span>
+                <span class="text-xs font-bold">1.2k</span>
+            </div>
+        </div>
+
+        <!-- Area Gift & Chat -->
+        <div class="absolute inset-0 z-10 flex flex-col justify-end pb-20 px-4">
+            <!-- Container Gift TikTok Style -->
+            <div id="gift-display-area" class="mb-4 space-y-2 pointer-events-none"></div>
+
+            <div id="chat-box" class="h-40 overflow-y-auto hide-scrollbar space-y-2 mb-4" onclick="goToDirectLink(event)">
+                <div class="bg-black/30 backdrop-blur-sm rounded-lg p-2 max-w-[80%] border border-white/5">
+                    <p class="text-xs"><span class="text-yellow-400 font-bold">Sistem:</span> Tap-tap layar untuk memberikan ❤️!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="absolute bottom-0 left-0 right-0 z-20 p-4 bg-gradient-to-t from-black/80 to-transparent flex items-center space-x-3">
+            <input type="text" readonly onclick="goToDirectLink(event)" placeholder="Kirim pesan..." class="flex-1 bg-black/40 border border-white/20 rounded-full px-4 py-2 text-sm focus:outline-none backdrop-blur-md">
+            
+            <!-- Tombol Gift -->
+            <button class="bg-yellow-500 p-2 rounded-full shadow-lg" onclick="goToDirectLink(event)">
+                🎁
+            </button>
+            
+            <button class="bg-pink-500 p-2 rounded-full shadow-lg" onclick="addHeart()">
+                ❤️
+            </button>
+        </div>
+
+        <!-- Love Container Otomatis (Samping) -->
+        <div id="heart-container" class="absolute bottom-20 right-4 w-20 h-64 pointer-events-none z-30"></div>
+    </div>
+
+    <script>
+        // ==========================================
+        // CONFIGURASI
+        // ==========================================
+        const directLink = "https://link-tujuan-kamu.com";
+        
+        const giftList = [
+            { name: "Mawar", icon: "🌹" },
+            { name: "TikTok", icon: "🎵" },
+            { name: "Singa", icon: "🦁" }
+        ];
+
+        function goToDirectLink(event) {
+            // Mencegah tap layar memicu spawn love saat klik tombol/area penting
+            if(event) event.stopPropagation();
+            window.open(directLink, '_blank');
+        }
+
+        // FUNGSI BARU: Tap layar keluar Love
+        function spawnTapHeart(e) {
+            const heart = document.createElement('div');
+            const hearts = ["❤️", "💖", "💗", "💕"];
+            heart.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
+            heart.className = "tap-heart text-2xl";
+            
+            // Atur posisi sesuai koordinat klik user
+            heart.style.left = (e.clientX - 10) + "px";
+            heart.style.top = (e.clientY - 10) + "px";
+            
+            document.body.appendChild(heart);
+            
+            // Hapus elemen setelah animasi selesai
+            setTimeout(() => {
+                heart.remove();
+            }, 800);
+        }
+
+        // Fungsi Menampilkan Gift ala TikTok
+        function showTikTokGift(sender, giftObj) {
+            const area = document.getElementById('gift-display-area');
+            const giftEl = document.createElement('div');
+            giftEl.className = "gift-notif animate-slide-up flex items-center p-1 rounded-full w-max pr-6 relative overflow-visible";
+            const combo = Math.floor(Math.random() * 5) + 1;
+
+            giftEl.innerHTML = `
+                <div class="relative">
+                    <img src="https://ui-avatars.com/api/?name=${sender}&background=random" class="w-8 h-8 rounded-full border border-white/50">
+                </div>
+                <div class="ml-2 mr-4">
+                    <p class="text-[10px] font-bold text-white leading-none">${sender}</p>
+                    <p class="text-[10px] text-pink-200">Mengirim ${giftObj.name}</p>
+                </div>
+                <div class="text-2xl drop-shadow-lg">${giftObj.icon}</div>
+                <div class="absolute -right-10 italic font-black text-yellow-400 text-2xl animate-combo" style="text-shadow: 2px 2px 0px #000">
+                    x${combo}
+                </div>
+            `;
+            area.appendChild(giftEl);
+            setTimeout(() => {
+                giftEl.style.opacity = '0';
+                setTimeout(() => giftEl.remove(), 500);
+            }, 3000);
+        }
+
+        function addHeart() {
+            const container = document.getElementById('heart-container');
+            const heart = document.createElement('div');
+            heart.innerHTML = "❤️";
+            heart.className = "absolute bottom-0 text-xl pointer-events-none";
+            heart.style.left = Math.random() * 50 + "px";
+            heart.style.animation = `floatUp ${1 + Math.random()}s ease-out forwards`;
+            container.appendChild(heart);
+            setTimeout(() => heart.remove(), 1500);
+        }
+
+        // Simulasi Chat Otomatis
+        setInterval(() => {
+            const names = ["Andi_Praz", "Siska_Cute", "Raja_Gifts"];
+            const messages = ["Lagi nunggu apa kak?", "Cantik bgt!", "Grup WA dong kak"];
+            const name = names[Math.floor(Math.random() * names.length)];
+            const msg = messages[Math.floor(Math.random() * messages.length)];
+            const chatBox = document.getElementById('chat-box');
+            const chatDiv = document.createElement('div');
+            chatDiv.className = "animate-slide-up bg-black/30 backdrop-blur-sm rounded-lg p-2 max-w-[85%] border border-white/5";
+            chatDiv.innerHTML = `<p class="text-xs"><span class="text-pink-400 font-bold">${name}:</span> ${msg}</p>`;
+            chatBox.appendChild(chatDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            if (chatBox.children.length > 8) chatBox.removeChild(chatBox.firstChild);
+        }, 3000);
+
+        setInterval(() => {
+            const names = ["User99", "Mawar_Hitam", "Budi_Gaming"];
+            const randomUser = names[Math.floor(Math.random() * names.length)];
+            const randomGift = giftList[Math.floor(Math.random() * giftList.length)];
+            showTikTokGift(randomUser, randomGift);
+        }, 6000);
+
+    </script>
+</body>
+</html>
